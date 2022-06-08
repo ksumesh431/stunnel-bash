@@ -1,0 +1,39 @@
+#!/bin/bash
+
+
+# Get old port 
+x=$(cat test.conf | grep -o "lastport.....")
+
+
+# Number to be incremented
+y=$(echo $x | grep -o [0-9]*$)
+
+
+# Incremented number
+z=$(echo "$y + 1" | bc)
+
+
+# Final string with "lastport"
+finalStr="lastport"$z
+echo $finalStr
+
+
+# Replace old variable with incremented variable
+sed -i  "s/lastport[0-9]*$/$finalStr/g" test.conf
+
+
+
+client_id="willtx"
+
+printf '%s\n' \
+       "[${client_id}-pd-db]" \
+       "client = yes" \
+       "accept = 0.0.0.0:${z}" \
+       "connect = gw-a.${client_id}.ferp.io:10001" \
+       "cert = /etc/stunnel/stunnel.pem" \
+       '' \
+       >> test.conf
+       
+
+
+
